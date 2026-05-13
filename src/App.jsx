@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import scoobyImage from "./assets/scooby.png";
 
-const PASSWORD = "jmscoob1700";
+const PASSWORD = import.meta.env.VITE_PASSWORD;
 const YOUTUBE_LINK = "https://www.youtube.com/watch?v=Xi1DahW2R2k";
 
 function App() {
