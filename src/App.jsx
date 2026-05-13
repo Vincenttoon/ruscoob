@@ -92,12 +92,12 @@ function App() {
         {step === "initials" && (
           <>
             <h1>Are your initials in this list?</h1>
-            <p>A D V J T M W E L O</p>
+            <p>A D V C T B W E L O I</p>
             <div style={buttonRow}>
-              <button onClick={() => setStep("image")} style={buttonStyle}>
+              <button onClick={goToTryAgain} style={buttonStyle}>
                 Yes
               </button>
-              <button onClick={goToTryAgain} style={buttonStyle}>
+              <button onClick={() => setStep("image")} style={buttonStyle}>
                 No
               </button>
             </div>
