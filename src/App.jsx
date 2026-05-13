@@ -1,175 +1,332 @@
+import { useEffect, useState } from "react";
+import "./App.css";
+import scoobyImage from "./assets/scooby.png";
+
+const PASSWORD = "jmscoob1700";
+const YOUTUBE_LINK = "https://www.youtube.com/watch?v=Xi1DahW2R2k";
+
 function App() {
+  const [step, setStep] = useState("start");
+  const [password, setPassword] = useState("");
+  const [countdown, setCountdown] = useState(3);
+  const [madeByAnswer, setMadeByAnswer] = useState("");
+
+  const goToTryAgain = () => {
+    setCountdown(3);
+    setStep("tryAgain");
+  };
+
+  useEffect(() => {
+    if (step === "tryAgain") {
+      const countdownTimer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            return 1;
+          }
+
+          return prev - 1;
+        });
+      }, 1000);
+
+      const redirectTimer = setTimeout(() => {
+        setStep("start");
+      }, 3000);
+
+      return () => {
+        clearInterval(countdownTimer);
+        clearTimeout(redirectTimer);
+      };
+    }
+  }, [step]);
+
+  const goToYoutube = () => {
+    window.location.href = YOUTUBE_LINK;
+  };
+
+  const checkPassword = () => {
+    if (password === PASSWORD) {
+      setStep("sure");
+    } else {
+      setPassword("");
+      setStep("start");
+    }
+  };
+
+  const checkMadeByAnswer = () => {
+    const validAnswers = [
+      "vince",
+      "vincent",
+      "toon",
+      "camelotbowl",
+      "toonthegoon",
+      "vinny",
+      "cutie",
+    ];
+
+    const answer = madeByAnswer.trim().toLowerCase();
+
+    if (validAnswers.includes(answer)) {
+      setStep("final");
+    } else {
+      goToYoutube();
+    }
+  };
+
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#111",
-        color: "white",
-        minHeight: "100vh",
-      }}
-    >
-      {/* Header */}
-      <header
-        style={{
-          padding: "20px 40px",
-          borderBottom: "1px solid #222",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          position: "sticky",
-          top: 0,
-          backgroundColor: "#111",
-        }}
-      >
-        <h2>Ruscoob</h2>
+    <div style={pageStyle}>
+      <div style={cardStyle}>
+        {step === "start" && (
+          <>
+            <h1>Are You Scoob?</h1>
+            <div style={buttonRow}>
+              <button onClick={() => setStep("initials")} style={buttonStyle}>
+                Yes
+              </button>
+              <button onClick={goToTryAgain} style={buttonStyle}>
+                No
+              </button>
+            </div>
+          </>
+        )}
 
-        <nav style={{ display: "flex", gap: "20px" }}>
-          <a href="#" style={linkStyle}>
-            Home
-          </a>
-          <a href="#about" style={linkStyle}>
-            About
-          </a>
-          <a href="#services" style={linkStyle}>
-            Services
-          </a>
-          <a href="#contact" style={linkStyle}>
-            Contact
-          </a>
-        </nav>
-      </header>
+        {step === "initials" && (
+          <>
+            <h1>Are your initials in this list?</h1>
+            <p>A D V J T M W E L O</p>
+            <div style={buttonRow}>
+              <button onClick={() => setStep("image")} style={buttonStyle}>
+                Yes
+              </button>
+              <button onClick={goToTryAgain} style={buttonStyle}>
+                No
+              </button>
+            </div>
+          </>
+        )}
 
-      {/* Hero */}
-      <section
-        style={{
-          minHeight: "80vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          padding: "40px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "72px",
-            marginBottom: "20px",
-          }}
-        >
-          Welcome to Ruscoob
-        </h1>
+        {step === "image" && (
+          <>
+            <h1>Is this you?</h1>
+            <img src={scoobyImage} alt="Scoob" style={imageStyle} />
+            <div style={buttonRow}>
+              <button onClick={() => setStep("password")} style={buttonStyle}>
+                Yes
+              </button>
+              <button onClick={goToYoutube} style={buttonStyle}>
+                No
+              </button>
+            </div>
+          </>
+        )}
+        {step === "password" && (
+          <>
+            <h1>Enter the password</h1>
 
-        <p
-          style={{
-            fontSize: "22px",
-            maxWidth: "700px",
-            color: "#bbb",
-            lineHeight: 1.6,
-          }}
-        >
-          Building simple, modern web experiences with React and Vite.
-        </p>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  checkPassword();
+                }
+              }}
+              style={inputStyle}
+              placeholder="Password"
+            />
 
-        <button
-          style={{
-            marginTop: "30px",
-            padding: "14px 28px",
-            fontSize: "18px",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            backgroundColor: "white",
-          }}
-        >
-          Learn More
-        </button>
-      </section>
+            <div style={buttonRow}>
+              <button onClick={checkPassword} style={buttonStyle}>
+                Enter
+              </button>
 
-      {/* About */}
-      <section
-        id="about"
-        style={{
-          padding: "100px 40px",
-          backgroundColor: "#181818",
-        }}
-      >
-        <h2 style={{ fontSize: "42px" }}>About</h2>
+              <button onClick={goToTryAgain} style={buttonStyle}>
+                No
+              </button>
+            </div>
+          </>
+        )}
 
-        <p
-          style={{
-            marginTop: "20px",
-            maxWidth: "800px",
-            color: "#bbb",
-            lineHeight: 1.8,
-            fontSize: "18px",
-          }}
-        >
-          Ruscoob is a lightweight React project focused on clean design,
-          simplicity, and fast performance.
-        </p>
-      </section>
+        {step === "sure" && (
+          <>
+            <h1>Are you sure?</h1>
+            <div style={buttonRow}>
+              <button onClick={() => setStep("oneMore")} style={buttonStyle}>
+                Yes
+              </button>
+              <button
+                onClick={goToTryAgain}
+                style={buttonStyle}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#2ecc71";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "#6a0dad";
+                }}
+                onMouseDown={(e) => {
+                  e.target.style.backgroundColor = "#ff8c00";
+                }}
+                onMouseUp={(e) => {
+                  e.target.style.backgroundColor = "#2ecc71";
+                }}
+              >
+                No
+              </button>
+            </div>
+          </>
+        )}
 
-      {/* Services */}
-      <section
-        id="services"
-        style={{
-          padding: "100px 40px",
-        }}
-      >
-        <h2 style={{ fontSize: "42px" }}>Services</h2>
+        {step === "oneMore" && (
+          <>
+            <h1>One more question...</h1>
+            <div style={buttonRow}>
+              <button onClick={() => setStep("madeBy")} style={buttonStyle}>
+                okay...
+              </button>
+              <button
+                onClick={goToTryAgain}
+                style={buttonStyle}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#2ecc71";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "#6a0dad";
+                }}
+                onMouseDown={(e) => {
+                  e.target.style.backgroundColor = "#ff8c00";
+                }}
+                onMouseUp={(e) => {
+                  e.target.style.backgroundColor = "#2ecc71";
+                }}
+              >
+                No
+              </button>
+            </div>
+          </>
+        )}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "20px",
-            marginTop: "40px",
-          }}
-        >
-          <div style={cardStyle}>
-            <h3>Web Design</h3>
-            <p>Modern responsive layouts built for speed and simplicity.</p>
-          </div>
+        {step === "madeBy" && (
+          <>
+            <h1>Who made you this?</h1>
 
-          <div style={cardStyle}>
-            <h3>Development</h3>
-            <p>React and Vite applications with clean structure.</p>
-          </div>
+            <input
+              type="text"
+              value={madeByAnswer}
+              onChange={(e) => setMadeByAnswer(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  checkMadeByAnswer();
+                }
+              }}
+              style={inputStyle}
+              placeholder="Enter answer"
+            />
 
-          <div style={cardStyle}>
-            <h3>Hosting</h3>
-            <p>Deployment-ready frontend projects for production use.</p>
-          </div>
-        </div>
-      </section>
+            <div style={buttonRow}>
+              <button onClick={checkMadeByAnswer} style={buttonStyle}>
+                Enter
+              </button>
 
-      {/* Footer */}
-      <footer
-        id="contact"
-        style={{
-          padding: "40px",
-          borderTop: "1px solid #222",
-          textAlign: "center",
-          color: "#777",
-        }}
-      >
-        © 2026 Ruscoob
-      </footer>
+              <button onClick={goToYoutube} style={buttonStyle}>
+                No
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === "tryAgain" && (
+          <>
+            <h1>Get outta here...</h1>
+            <p>{countdown}</p>
+          </>
+        )}
+
+        {step === "final" && (
+          <>
+            <h1>Hi Jalyn ❤️ :D</h1>
+            <p>It appears I may have a crush on you</p>
+
+            <div style={buttonRow}>
+              <button
+                onClick={() => {
+                  window.location.href =
+                    "https://www.youtube.com/watch?v=tTF4gN6XhF0";
+                }}
+                style={buttonStyle}
+              >
+                Hooray!
+              </button>
+
+              <button
+                onClick={() => {
+                  window.location.href =
+                    "https://www.youtube.com/watch?v=hFTxCI8RnkA";
+                }}
+                style={buttonStyle}
+              >
+                oh no!
+              </button>
+
+              <button
+                onClick={() => {
+                  setStep("start");
+                }}
+                style={buttonStyle}
+              >
+                Try again?... ?
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-const linkStyle = {
+const pageStyle = {
+  minHeight: "100vh",
+  backgroundColor: "#111",
   color: "white",
-  textDecoration: "none",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  fontFamily: "Arial, sans-serif",
+  textAlign: "center",
+  padding: "20px",
 };
 
 const cardStyle = {
   backgroundColor: "#1f1f1f",
-  padding: "30px",
+  padding: "40px",
+  borderRadius: "16px",
+  maxWidth: "600px",
+  width: "100%",
+};
+
+const buttonRow = {
+  display: "flex",
+  justifyContent: "center",
+  gap: "20px",
+  marginTop: "25px",
+  flexWrap: "wrap",
+};
+
+const buttonStyle = {};
+
+const inputStyle = {
+  padding: "12px",
+  fontSize: "18px",
+  borderRadius: "8px",
+  border: "none",
+  marginTop: "20px",
+  width: "80%",
+};
+
+const imageStyle = {
+  maxWidth: "100%",
+  maxHeight: "350px",
   borderRadius: "12px",
-  lineHeight: 1.6,
+  marginTop: "20px",
 };
 
 export default App;
